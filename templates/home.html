@@ -1,0 +1,450 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<style>
+  body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background-color: #0e0e0e;
+    color: #f0f0f0;
+  }
+
+  /* Navbar */
+  .navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(90deg, #1a1a2e, #16213e);
+    padding: 12px 30px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.6);
+  }
+
+  .logo img {
+    height: 50px;
+    width: auto;
+  }
+
+  .nav-links {
+    list-style: none;
+    display: flex;
+    margin: 0;
+    padding: 0;
+  }
+
+  .nav-links li {
+    margin-left: 20px;
+  }
+
+  .nav-links a {
+    position: relative;
+    text-decoration: none;
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 8px 16px;
+    transition: color 0.3s ease, transform 0.3s ease;
+  }
+
+  .nav-links a::after {
+    content: "";
+    position: absolute;
+    left: 16px;
+    bottom: 6px;
+    width: 0%;
+    height: 2px;
+    background-color: #00d9ff;
+    transition: width 0.4s ease-in-out;
+    border-radius: 2px;
+  }
+
+  .nav-links a:hover {
+    color: #00d9ff;
+    transform: scale(1.08);
+    text-shadow: 0 0 8px rgba(0, 217, 255, 0.4);
+  }
+
+  .nav-links a:hover::after {
+    width: 70%;
+  }
+
+  /* Carousel */
+  .carousel-container {
+    position: relative;
+    width: 100%;
+    height: 90vh;
+    overflow: hidden;
+    /* margin-top removed to fix gap */
+  }
+
+  .carousel-wrapper {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.8s ease-in-out;
+  }
+
+  .carousel-slide {
+    min-width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .carousel-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .arrow-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 26px;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    cursor: pointer;
+    padding: 10px 16px;
+    z-index: 2;
+    border-radius: 5px;
+  }
+
+  .arrow-left {
+    left: 10px;
+  }
+
+  .arrow-right {
+    right: 10px;
+  }
+
+  /* Dabba Section */
+  .dabba-section {
+    padding: 40px 20px;
+    background-color: #121212;
+  }
+
+  .dabba-section h2 {
+    text-align: center;
+    font-size: 28px;
+    color: #00d9ff;
+    margin-bottom: 30px;
+  }
+
+  .dabba-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 25px;
+    max-width: 1300px;
+    margin: 0 auto;
+  }
+
+  .dabba {
+    background: #1f1f1f;
+    border: 1px solid #333;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    text-align: center;
+    padding: 20px;
+    cursor: pointer;
+  }
+
+  .dabba img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+
+  .dabba:hover {
+    transform: scale(1.03);
+    box-shadow: 0 8px 20px rgba(0, 217, 255, 0.1);
+  }
+
+  /* Modal */
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 10;
+    padding-top: 60px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.95);
+  }
+
+  .modal-content {
+    margin: auto;
+    display: block;
+    max-width: 80%;
+    max-height: 80%;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+  }
+
+  .close {
+    position: absolute;
+    top: 25px;
+    right: 35px;
+    color: #fff;
+    font-size: 35px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  .close:hover {
+    color: #00d9ff;
+    text-shadow: 0 0 10px #00d9ff;
+  }
+
+  @media (max-width: 768px) {
+    .carousel-container {
+      height: 60vh;
+    }
+
+    .navbar {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .nav-links {
+      flex-direction: column;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .nav-links li {
+      margin: 8px 0;
+    }
+
+    .nav-links a {
+      font-size: 16px;
+      width: 100%;
+      display: block;
+    }
+
+    .arrow-btn {
+      font-size: 20px;
+      padding: 8px 12px;
+    }
+
+    .dabba-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<!-- Navbar -->
+<nav class="navbar">
+  <div class="logo">
+    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo">
+  </div>
+  <ul class="nav-links">
+    <li><a href="{{ url_for('home') }}">Home</a></li>
+    <li><a href="{{ url_for('about') }}">About</a></li>
+    <li><a href="{{ url_for('contact') }}">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- Carousel -->
+<div class="carousel-container">
+  <div class="carousel-wrapper" id="carousel">
+    <div class="carousel-slide">
+      <img src="{{ url_for('static', filename='images/slide1.jpg') }}" alt="Slide 1">
+    </div>
+    <div class="carousel-slide">
+      <img src="{{ url_for('static', filename='images/slide2.jpg') }}" alt="Slide 2">
+    </div>
+    <div class="carousel-slide">
+      <img src="{{ url_for('static', filename='images/slide4.jpg') }}" alt="Slide 3">
+    </div>
+    <div class="carousel-slide">
+      <img src="{{ url_for('static', filename='images/slide6.jpg') }}" alt="Slide 4">
+    </div>
+  </div>
+  <button class="arrow-btn arrow-left" onclick="moveSlide(-1)">&#10094;</button>
+  <button class="arrow-btn arrow-right" onclick="moveSlide(1)">&#10095;</button>
+</div>
+
+<!-- Dabba Section -->
+<section class="dabba-section">
+  <h2>Esteemed Graduates</h2>
+  <div class="dabba-grid">
+    {% for i in range(1, 12) %}
+    <div class="dabba" onclick="openModal('{{ url_for('static', filename='images/group' + i|string + '.webp') }}')">
+      <img src="{{ url_for('static', filename='images/group' + i|string + '.webp') }}" alt="Group {{ i }}">
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- Modal -->
+<div id="imgModal" class="modal" onclick="closeModal()">
+  <span class="close" onclick="closeModal()">&times;</span>
+  <img class="modal-content" id="modalImage">
+</div>
+
+<script>
+  let index = 0;
+  const wrapper = document.getElementById('carousel');
+  const totalSlides = wrapper.children.length;
+
+  function moveSlide(step) {
+    index = (index + step + totalSlides) % totalSlides;
+    wrapper.style.transform = `translateX(-${index * 100}%)`;
+  }
+
+  function openModal(src) {
+    document.getElementById("modalImage").src = src;
+    document.getElementById("imgModal").style.display = "block";
+  }
+
+  function closeModal() {
+    document.getElementById("imgModal").style.display = "none";
+  }
+</script>
+
+<!-- Include Footer Below Here if required -->
+<style>
+  .site-footer {
+    background-color: #0e0e0e;
+    color: #ccc;
+    padding: 50px 20px 30px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 15px;
+    line-height: 1.8;
+  }
+
+  .footer-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .footer-column {
+    flex: 1 1 220px;
+  }
+
+  .footer-column h3 {
+    font-size: 17px;
+    color: #00d9ff;
+    margin-bottom: 15px;
+  }
+
+  .footer-column p,
+  .footer-column a {
+    color: #ccc;
+    font-size: 14px;
+    text-decoration: none;
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  .footer-column i {
+    color: #00d9ff;
+    margin-right: 8px;
+  }
+
+  .footer-column a:hover {
+    color: #ffffff;
+    text-shadow: 0 0 5px #00d9ff;
+  }
+
+  .social-icons {
+    display: flex;
+    gap: 12px;
+    margin-top: 10px;
+  }
+
+  .social-icons a {
+    background-color: #1a1a2e;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #00d9ff;
+    font-size: 16px;
+    transition: 0.3s;
+  }
+
+  .social-icons a:hover {
+    background-color: #00d9ff;
+    color: #0e0e0e;
+  }
+
+  .footer-bottom {
+    text-align: center;
+    margin-top: 40px;
+    font-size: 13px;
+    color: #888;
+    border-top: 1px solid #222;
+    padding-top: 20px;
+  }
+
+  @media (max-width: 768px) {
+    .footer-container {
+      flex-direction: column;
+      gap: 30px;
+    }
+
+    .footer-column {
+      width: 100%;
+    }
+  }
+</style>
+
+<footer class="site-footer">
+  <div class="footer-container">
+
+    <!-- Contact Info -->
+    <div class="footer-column">
+      <h3>Contact</h3>
+      <p><i class="fas fa-map-marker-alt"></i> Berhampur, Ganjam<br>Odisha – 761001</p>
+      <p><i class="fas fa-phone"></i> +91 79922 30572</p>
+      <p><i class="fas fa-phone"></i> +91 72052 17856</p>
+      <p><i class="fas fa-envelope"></i> nist.clubmultimedia@gmail.com</p>
+    </div>
+
+    <!-- Explore Links -->
+    <div class="footer-column">
+      <h3>Explore</h3>
+      <a href="{{ url_for('home') }}">Home</a>
+      <a href="{{ url_for('about') }}">About</a>
+      <a href="{{ url_for('contact') }}">Contact</a>
+    </div>
+
+    <!-- Services or Policies -->
+    <div class="footer-column">
+      <h3>Services</h3>
+      <a href="#">3D Animation</a>
+      <a href="#">AR/VR</a>
+      <a href="#">VFX Editing</a>
+      <a href="#">App/Website Dev</a>
+      <a href="#">FAQ</a>
+    </div>
+
+    <!-- Social Media -->
+    <div class="footer-column">
+      <h3>Follow Us</h3>
+      <div class="social-icons">
+        <a href="https://www.linkedin.com/in/club-multimedia-97b92b267/"><i class="fab fa-linkedin"></i></a>
+        <a href="https://www.instagram.com/nist_club_multimedia/"><i class="fab fa-instagram"></i></a>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    © 2025 <span style="color:#00d9ff;">Ruturaj's</span>. All Rights Reserved.
+  </div>
+</footer>
+
+{% endblock %}
